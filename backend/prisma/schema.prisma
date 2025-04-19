@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model RegistrationAccess {
+  email      String      @id @unique
+  privateKey String      @unique
+  counsellor Counsellor?
+}
+
+model College {
+  id         Int        @id @default(autoincrement())
+  name       String
+  sessionFee Int        @default(0)
+  documents  Document[]
+}
+
+model Document {
+  id              Int    @id @default(autoincrement())
+  idCardUrl       String
+  marksheetUrl    String
+  profilePhotoUrl String
+  collegeId       Int
+  branchName      String
+
+  college    College     @relation(fields: [collegeId], references: [id])
+  counsellor Counsellor?
+}
+
+model Counsellor {
+  id         Int      @id @default(autoincrement())
+  name       String
+  phone      String   @db.VarChar(10)
+  email      String   @unique
+  documentId Int?     @unique
+  createdAt  DateTime @default(now())
+
+  document           Document?          @relation(fields: [documentId], references: [id])
+  registrationAccess RegistrationAccess @relation(fields: [email], references: [email])
+}
