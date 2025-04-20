@@ -35,6 +35,7 @@ model Document {
 model Counsellor {
   id         Int      @id @default(autoincrement())
   name       String
+  password   String?
   phone      String   @db.VarChar(10)
   email      String   @unique
   documentId Int?     @unique

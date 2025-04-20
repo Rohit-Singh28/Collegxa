@@ -6,9 +6,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const path = require("path");
 
-const { PrismaClient } = require("@prisma/client");
-
-const prisma = new PrismaClient();
+const cousellorRoute = require("./src/route/Counsellor");
 
 dotenv.config();
 const app = express();
@@ -20,6 +18,8 @@ app.use(morgan("common"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
+
+app.use("/api/counsellor", cousellorRoute);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
