@@ -7,6 +7,9 @@ const dotenv = require("dotenv");
 const path = require("path");
 
 const cousellorRoute = require("./src/route/Counsellor");
+const otpRoute = require("./src/route/otp");
+
+const e = require("express");
 
 dotenv.config();
 const app = express();
@@ -19,6 +22,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
+app.use("/api", otpRoute);
 app.use("/api/counsellor", cousellorRoute);
 
 app.get("/", (req, res) => {
