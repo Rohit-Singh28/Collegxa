@@ -1,87 +1,65 @@
 "use client";
 
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
+import { counsellorContext } from "@/app/_context/counsellorContext";
+import axios from "axios";
 
 export default function RegisterPage() {
-  // Form state
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
+  const [reenteredPhone, setReenteredPhone] = useState("");
 
-  // Validation and process states
-  const [otpSent, setOtpSent] = useState(false);
-  const [otpVerified, setOtpVerified] = useState(false);
-  const [isFormValid, setIsFormValid] = useState(false);
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [isPasswordValid, setIsPasswordValid] = useState(true);
+  const [isPhoneValid, setIsPhoneValid] = useState(true);
+  const [doPhonesMatch, setDoPhonesMatch] = useState(true);
+  const [isFormValid, setIsFormValid] = useState(false);
 
-  // Password visibility states
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Validate form on input change
   useEffect(() => {
-    const areFieldsFilled =
-      name !== "" &&
-      password !== "" &&
-      confirmPassword !== "" &&
-      phone !== "" &&
-      otp !== "";
-    const doPasswordsMatch = password === confirmPassword;
-    const isPasswordLongEnough = password.length >= 5;
+    const passwordValid = password.length >= 5;
+    const passwordsMatch = password === confirmPassword;
+    const phoneValid = /^\d{10}$/.test(phone);
+    const phonesMatch = phone === reenteredPhone;
 
-    setPasswordsMatch(doPasswordsMatch);
-    setIsPasswordValid(isPasswordLongEnough || password.length === 0);
+    setIsPasswordValid(passwordValid || password.length === 0);
+    setPasswordsMatch(passwordsMatch);
+    setIsPhoneValid(phoneValid || phone.length === 0);
+    setDoPhonesMatch(phonesMatch);
+
     setIsFormValid(
-      areFieldsFilled && doPasswordsMatch && isPasswordLongEnough && otpVerified
+      name &&
+        passwordValid &&
+        passwordsMatch &&
+        phoneValid &&
+        phonesMatch &&
+        reenteredPhone
     );
-  }, [name, password, confirmPassword, phone, otp, otpVerified]);
+  }, [name, password, confirmPassword, phone, reenteredPhone]);
 
-  // Handle OTP sending
-  const handleSendOtp = (e) => {
-    e.preventDefault();
-    if (phone.length >= 10) {
-      // Simulate OTP sending
-      console.log("Sending OTP to", phone);
-      setOtpSent(true);
-      // In a real app, you would call an API here
-    }
-  };
+  const { setCounsellor, counsellor } = useContext(counsellorContext);
+  const email = counsellor?.email;
 
-  // Handle OTP verification
-  const handleVerifyOtp = (e) => {
-    e.preventDefault();
-    if (otp.length >= 4) {
-      // Simulate OTP verification
-      console.log("Verifying OTP", otp);
-      setOtpVerified(true);
-      // In a real app, you would verify the OTP with an API
-    }
-  };
-
-  // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (isFormValid) {
-      // Process the registration
-      console.log("Registration submitted:", { name, password, phone });
-      // In a real app, you would submit to an API
+      try {
+        const res = await axios.post(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/counsellor/register`,
+          { name, phone, password, email }
+        );
+
+        console.log(res.data);
+      } catch (error) {
+        console.error("Error during registration:", error);
+      }
     }
-  };
-
-  // Toggle password visibility
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
-  // Toggle confirm password visibility
-  const toggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(!showConfirmPassword);
   };
 
   return (
@@ -93,11 +71,11 @@ export default function RegisterPage() {
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Name Field */}
+            {/* Name */}
             <div className="space-y-2">
               <label
                 htmlFor="name"
-                className="block text-sm font-medium text-gray-700"
+                className="text-sm font-medium text-gray-700"
               >
                 Name
               </label>
@@ -106,16 +84,16 @@ export default function RegisterPage() {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7E22CE] focus:border-transparent transition-all duration-200 outline-none"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7E22CE] focus:border-transparent outline-none"
                 placeholder="Enter your full name"
               />
             </div>
 
-            {/* Password Field with Show/Hide Toggle */}
+            {/* Password */}
             <div className="space-y-2">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
+                className="text-sm font-medium text-gray-700"
               >
                 Password
               </label>
@@ -125,15 +103,15 @@ export default function RegisterPage() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#7E22CE] focus:border-transparent transition-all duration-200 outline-none ${
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#7E22CE] outline-none ${
                     !isPasswordValid ? "border-red-500" : "border-gray-300"
                   }`}
                   placeholder="Create a password"
                 />
                 <button
                   type="button"
-                  onClick={togglePasswordVisibility}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400"
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
@@ -145,11 +123,11 @@ export default function RegisterPage() {
               )}
             </div>
 
-            {/* Confirm Password Field with Show/Hide Toggle */}
+            {/* Confirm Password */}
             <div className="space-y-2">
               <label
                 htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700"
+                className="text-sm font-medium text-gray-700"
               >
                 Confirm Password
               </label>
@@ -159,7 +137,7 @@ export default function RegisterPage() {
                   type={showConfirmPassword ? "text" : "password"}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#7E22CE] focus:border-transparent transition-all duration-200 outline-none ${
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#7E22CE] outline-none ${
                     !passwordsMatch && confirmPassword
                       ? "border-red-500"
                       : "border-gray-300"
@@ -168,8 +146,8 @@ export default function RegisterPage() {
                 />
                 <button
                   type="button"
-                  onClick={toggleConfirmPasswordVisibility}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400"
                 >
                   {showConfirmPassword ? (
                     <EyeOff size={20} />
@@ -185,70 +163,67 @@ export default function RegisterPage() {
               )}
             </div>
 
-            {/* Phone Number Field with Send OTP Button */}
+            {/* Phone Number */}
             <div className="space-y-2">
               <label
                 htmlFor="phone"
-                className="block text-sm font-medium text-gray-700"
+                className="text-sm font-medium text-gray-700"
               >
                 Phone Number
               </label>
-              <div className="flex gap-2">
-                <input
-                  id="phone"
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7E22CE] focus:border-transparent transition-all duration-200 outline-none"
-                  placeholder="Enter your phone number"
-                />
-                <button
-                  onClick={handleSendOtp}
-                  disabled={phone.length < 10 || otpSent}
-                  className={`px-4 py-2 rounded-lg text-white font-medium transition-all duration-300 ${
-                    phone.length < 10 || otpSent
-                      ? "bg-[#7E22CE] opacity-70 cursor-not-allowed"
-                      : "bg-[#7E22CE] hover:bg-purple-800"
-                  }`}
-                >
-                  {otpSent ? "Sent" : "Send OTP"}
-                </button>
-              </div>
+              <input
+                id="phone"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={10}
+                value={phone}
+                onChange={(e) => setPhone(e.target.value.replace(/\D/, ""))}
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#7E22CE] outline-none ${
+                  !isPhoneValid && phone ? "border-red-500" : "border-gray-300"
+                }`}
+                placeholder="Enter 10-digit phone number"
+              />
+              {!isPhoneValid && phone && (
+                <p className="text-red-500 text-xs mt-1">
+                  Phone number must be exactly 10 digits
+                </p>
+              )}
             </div>
 
-            {/* OTP Field with Verify Button */}
+            {/* Re-enter Phone Number */}
             <div className="space-y-2">
               <label
-                htmlFor="otp"
-                className="block text-sm font-medium text-gray-700"
+                htmlFor="reenterPhone"
+                className="text-sm font-medium text-gray-700"
               >
-                OTP
+                Re-enter Phone Number
               </label>
-              <div className="flex gap-2">
-                <input
-                  id="otp"
-                  type="text"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7E22CE] focus:border-transparent transition-all duration-200 outline-none"
-                  placeholder="Enter OTP"
-                  disabled={!otpSent}
-                />
-                <button
-                  onClick={handleVerifyOtp}
-                  disabled={otp.length < 4 || !otpSent || otpVerified}
-                  className={`px-4 py-2 rounded-lg text-white font-medium transition-all duration-300 ${
-                    otp.length < 4 || !otpSent || otpVerified
-                      ? "bg-[#7E22CE] opacity-70 cursor-not-allowed"
-                      : "bg-[#7E22CE] hover:bg-purple-800"
-                  }`}
-                >
-                  {otpVerified ? "Verified" : "Verify"}
-                </button>
-              </div>
+              <input
+                id="reenterPhone"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={10}
+                value={reenteredPhone}
+                onChange={(e) =>
+                  setReenteredPhone(e.target.value.replace(/\D/, ""))
+                }
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#7E22CE] outline-none ${
+                  !doPhonesMatch && reenteredPhone
+                    ? "border-red-500"
+                    : "border-gray-300"
+                }`}
+                placeholder="Re-enter phone number"
+              />
+              {!doPhonesMatch && reenteredPhone && (
+                <p className="text-red-500 text-xs mt-1">
+                  Phone numbers do not match
+                </p>
+              )}
             </div>
 
-            {/* Register Button */}
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={!isFormValid}
@@ -262,7 +237,6 @@ export default function RegisterPage() {
             </button>
           </form>
 
-          {/* Login Link */}
           <div className="mt-6 text-center">
             <Link
               href="/login"
