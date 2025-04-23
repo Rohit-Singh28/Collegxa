@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useContext } from "react";
 import { useState, useEffect } from "react";
+import axios from "axios"; // Make sure to install axios: npm install axios
 import {
   FileText,
   Camera,
@@ -11,7 +12,9 @@ import {
   Building2,
   AlertCircle,
   Save,
+  Loader,
 } from "lucide-react";
+import { counsellorContext } from "@/app/_context/counsellorContext";
 
 export default function DocumentSubmissionForm() {
   // Form state
@@ -29,6 +32,18 @@ export default function DocumentSubmissionForm() {
   // Form validation state
   const [isFormValid, setIsFormValid] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  const { setCounsellor, counsellor } = useContext(counsellorContext);
+  const email = counsellor?.email || ""; // Get the email from the context
+
+  // Cloudinary upload URLs
+  const [cloudinaryUrls, setCloudinaryUrls] = useState({
+    idCard: "",
+    scorecard: "",
+    profilePhoto: "",
+  });
 
   // Available branches
   const branches = [
@@ -69,31 +84,117 @@ export default function DocumentSubmissionForm() {
     }
   };
 
+  // Upload a single file to Cloudinary using Axios
+  const uploadToCloudinary = async (file, fileType) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append(
+      "upload_preset",
+      process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+    );
+    formData.append("folder", "document-verification");
+    formData.append("tags", `document-verification,${fileType}`);
+
+    try {
+      const response = await axios.post(
+        process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_URL,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          onUploadProgress: (progressEvent) => {
+            const percentage = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            setUploadProgress(percentage);
+          },
+        }
+      );
+
+      return response.data.secure_url;
+    } catch (error) {
+      console.error("Error uploading to Cloudinary:", error);
+      throw new Error("Upload failed");
+    }
+  };
+
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (isFormValid) {
-      // In a real app, you would submit to an API
-      console.log("Form submitted:", {
-        idCard,
-        scorecard,
-        profilePhoto,
-        branch,
-        collegeName,
-      });
+      setIsLoading(true);
+      setUploadProgress(0);
 
-      // You could use FormData to send the files to a server
-      const formData = new FormData();
-      if (idCard) formData.append("idCard", idCard);
-      if (scorecard) formData.append("scorecard", scorecard);
-      if (profilePhoto) formData.append("profilePhoto", profilePhoto);
-      formData.append("branch", branch);
-      formData.append("collegeName", collegeName);
+      try {
+        // Upload each file to Cloudinary
+        const idCardUrl = await uploadToCloudinary(idCard, "id-card");
+        setUploadProgress(33);
 
-      // Show success message
-      setSubmitted(true);
+        const scorecardUrl = await uploadToCloudinary(scorecard, "scorecard");
+        setUploadProgress(66);
 
-      // Example: fetch('/api/submit-documents', { method: 'POST', body: formData })
+        const profilePhotoUrl = await uploadToCloudinary(
+          profilePhoto,
+          "profile-photo"
+        );
+        setUploadProgress(100);
+
+        // Store the Cloudinary URLs
+        const urls = {
+          idCard: idCardUrl,
+          scorecard: scorecardUrl,
+          profilePhoto: profilePhotoUrl,
+        };
+
+        setCloudinaryUrls(urls);
+
+        // In a real app, you would save these URLs to a database
+        // console.log("Form submitted with Cloudinary URLs:", {
+        //   idCardUrl,
+        //   scorecardUrl,
+        //   profilePhotoUrl,
+        //   branch,
+        //   collegeName,
+        // });
+
+        // Create an object with all form data
+        const formData = {
+          idCardUrl,
+          scorecardUrl,
+          profilePhotoUrl,
+          branch,
+          collegeName,
+        };
+
+        // Send the form data to your backend or API endpoint
+        const res = await axios.post(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/counsellor/documentInfo`,
+          {
+            email: email,
+            idCardUrl: idCardUrl,
+            marksheetUrl: scorecardUrl,
+            profilePhotoUrl: profilePhotoUrl,
+            branchName: branch,
+            collegeId: 1,
+          }
+        );
+
+        console.log("Response from backend:", res.data);
+
+        // If you need to send the URLs to your backend, you can do it here
+        // Example: await axios.post('/api/save-document-urls', formData);
+
+        // Show success message
+        setSubmitted(true);
+      } catch (error) {
+        console.error("Error uploading files:", error);
+        alert(
+          "An error occurred while uploading your files. Please try again."
+        );
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -109,14 +210,42 @@ export default function DocumentSubmissionForm() {
               Submission Successful!
             </h2>
             <p className="text-gray-600 mb-6">
-              Your documents have been successfully submitted. We will review
-              them shortly.
+              Your documents have been successfully uploaded and submitted. We
+              will review them shortly.
             </p>
-            <button
-              onClick={() => setSubmitted(false)}
-              className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-200 font-medium"
-            >
-              Submit Another Application
+            <div className="bg-gray-50 p-4 rounded-lg mb-6 text-left">
+              <h3 className="text-sm font-medium text-gray-700 mb-2">
+                Your Uploaded Documents:
+              </h3>
+              <div className="grid grid-cols-3 gap-2">
+                <a
+                  href={cloudinaryUrls.idCard}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-indigo-600 hover:underline text-sm truncate"
+                >
+                  ID Card
+                </a>
+                <a
+                  href={cloudinaryUrls.scorecard}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-indigo-600 hover:underline text-sm truncate"
+                >
+                  Scorecard
+                </a>
+                <a
+                  href={cloudinaryUrls.profilePhoto}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-indigo-600 hover:underline text-sm truncate"
+                >
+                  Profile Photo
+                </a>
+              </div>
+            </div>
+            <button className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-200 font-medium">
+              Continue
             </button>
           </div>
         ) : (
@@ -137,8 +266,9 @@ export default function DocumentSubmissionForm() {
                 </div>
                 <div className="ml-3">
                   <p className="text-sm text-blue-700">
-                    Please ensure all documents are clearly visible and in JPG,
-                    PNG, or PDF format.
+                    Please ensure all documents are clearly visible and in JPG
+                    or PNG format. Files will be uploaded directly to our secure
+                    storage service.
                   </p>
                 </div>
               </div>
@@ -159,7 +289,7 @@ export default function DocumentSubmissionForm() {
                     <input
                       id="idCard"
                       type="file"
-                      accept="image/*,.pdf"
+                      accept="image/*"
                       onChange={(e) =>
                         handleFileChange(e, setIdCard, setIdCardPreview)
                       }
@@ -214,7 +344,7 @@ export default function DocumentSubmissionForm() {
                     <input
                       id="scorecard"
                       type="file"
-                      accept="image/*,.pdf"
+                      accept="image/*"
                       onChange={(e) =>
                         handleFileChange(e, setScorecard, setScorecardPreview)
                       }
@@ -385,18 +515,47 @@ export default function DocumentSubmissionForm() {
                 </div>
               </div>
 
+              {/* Upload Progress */}
+              {isLoading && (
+                <div className="mt-4">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm text-gray-600">
+                      Uploading documents...
+                    </span>
+                    <span className="text-sm font-medium text-indigo-600">
+                      {uploadProgress}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2.5">
+                    <div
+                      className="bg-indigo-600 h-2.5 rounded-full"
+                      style={{ width: `${uploadProgress}%` }}
+                    ></div>
+                  </div>
+                </div>
+              )}
+
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={!isFormValid}
+                disabled={!isFormValid || isLoading}
                 className={`w-full py-3 px-4 rounded-lg text-white font-medium mt-8 transition-all duration-300 flex items-center justify-center ${
-                  isFormValid
+                  isFormValid && !isLoading
                     ? "bg-indigo-600 hover:bg-indigo-700 shadow-md"
                     : "bg-indigo-400 opacity-60 cursor-not-allowed"
                 }`}
               >
-                <Save size={18} className="mr-2" />
-                Submit Documents
+                {isLoading ? (
+                  <>
+                    <Loader size={18} className="mr-2 animate-spin" />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <Save size={18} className="mr-2" />
+                    Submit Documents
+                  </>
+                )}
               </button>
 
               <p className="text-xs text-center text-gray-500 mt-4">
