@@ -3,34 +3,33 @@ const prisma = new PrismaClient();
 
 const verification = async (req, res) => {
   const { email, privateKey } = req.body;
+  // console.log(email, privateKey);
 
   if (!email || !privateKey) {
     return res
       .status(400)
-      .json({ error: "Email and private key are required", data: [] });
+      .json({ msg: "Email and private key are required", data: [] });
   }
 
   try {
-    const isUserExists = await prisma.counsellor.findUnique({
+    const isUserExists = await prisma.registrationAccess.findUnique({
       where: {
         email,
       },
     });
 
     if (isUserExists) {
-      return res.status(400).json({ error: "User already exists", data: [] });
+      return res.status(400).json({ msg: "User already exists", data: [] });
     }
 
     const existingKey = await prisma.registrationAccess.findUnique({
       where: {
-        email,
+        privateKey,
       },
     });
 
     if (existingKey) {
-      return res
-        .status(400)
-        .json({ error: "Private key already assigned for this email" });
+      return res.status(400).json({ msg: "Private key already used" });
     }
 
     const user = await prisma.registrationAccess.create({
@@ -42,7 +41,7 @@ const verification = async (req, res) => {
 
     return res
       .status(201)
-      .json({ message: "User created successfully", data: user });
+      .json({ msg: "User created successfully", data: user });
   } catch (error) {
     console.error("Error:", error);
     return res.status(500).json({ error: "Internal server error" });

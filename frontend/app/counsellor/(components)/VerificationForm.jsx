@@ -1,14 +1,17 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { validKeys } from "../verificationKey";
 import axios from "axios";
+import { counsellorContext } from "@/app/_context/counsellorContext";
+import { useRouter } from "next/navigation";
 
 export default function VerificationForm() {
   // Form fields
   const [verificationKey, setVerificationKey] = useState("");
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
+  const { setCounsellor, counsellor } = useContext(counsellorContext);
 
   // Status and validation states
   const [status, setStatus] = useState("");
@@ -18,6 +21,8 @@ export default function VerificationForm() {
 
   // Timer for OTP button
   const [timer, setTimer] = useState(0);
+
+  const router = useRouter();
 
   // Check form validity whenever inputs change
   useEffect(() => {
@@ -103,12 +108,29 @@ export default function VerificationForm() {
   };
 
   // Form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (isFormValid) {
-      console.log("Form submitted:", { verificationKey, email, otp });
-      setStatus("Form submitted successfully! Redirecting...");
+      setCounsellor({ email });
+
+      try {
+        const res = await axios.post(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/counsellor/verify`,
+          { email, privateKey: verificationKey }
+        );
+
+        console.log(res);
+        setStatus(res.data.msg);
+        setTimeout(() => {
+          router.push("/counsellor/register");
+        }, 1000); // Redirect after 2 seconds
+      } catch (error) {
+        console.error("Error during form submission:", error);
+        setStatus(
+          error.response.data?.msg || "An error occurred during submission"
+        );
+      }
     } else {
       setStatus("Please complete all verification steps before continuing");
     }
