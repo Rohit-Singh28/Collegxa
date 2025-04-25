@@ -1,8 +1,8 @@
 "use client";
 
-import React, { use, useContext } from "react";
+import React, { useContext } from "react";
 import { useState, useEffect } from "react";
-import axios from "axios"; // Make sure to install axios: npm install axios
+import axios from "axios";
 import {
   FileText,
   Camera,
@@ -15,12 +15,13 @@ import {
   Loader,
 } from "lucide-react";
 import { counsellorContext } from "@/app/_context/counsellorContext";
+import CollegeAutocomplete from "@/app/search/(components)/collegeAutocomplete";
 
 export default function DocumentSubmissionForm() {
   // Form state
-  const [idCard, setIdCard] = useState();
-  const [scorecard, setScorecard] = useState();
-  const [profilePhoto, setProfilePhoto] = useState();
+  const [idCard, setIdCard] = useState(null);
+  const [scorecard, setScorecard] = useState(null);
+  const [profilePhoto, setProfilePhoto] = useState(null);
   const [branch, setBranch] = useState("");
   const [collegeName, setCollegeName] = useState("");
 
@@ -35,8 +36,10 @@ export default function DocumentSubmissionForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  const { setCounsellor, counsellor } = useContext(counsellorContext);
-  const email = counsellor?.email || ""; // Get the email from the context
+  const { counsellor } = useContext(counsellorContext);
+  const email = counsellor?.email || "";
+
+  const [selectedCollege, setSelectedCollege] = useState(null);
 
   // Cloudinary upload URLs
   const [cloudinaryUrls, setCloudinaryUrls] = useState({
@@ -63,29 +66,31 @@ export default function DocumentSubmissionForm() {
       scorecard &&
       profilePhoto &&
       branch !== "" &&
-      collegeName !== "";
+      (selectedCollege || collegeName !== "");
 
     setIsFormValid(areFieldsFilled);
-  }, [idCard, scorecard, profilePhoto, branch, collegeName]);
+  }, [idCard, scorecard, profilePhoto, branch, collegeName, selectedCollege]);
 
   // Handle file uploads with preview
   const handleFileChange = (e, setFile, setPreview) => {
     const file = e.target.files?.[0] || null;
-    setFile(file);
-
     if (file) {
+      setFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result);
       };
       reader.readAsDataURL(file);
     } else {
+      setFile(null);
       setPreview("");
     }
   };
 
   // Upload a single file to Cloudinary using Axios
   const uploadToCloudinary = async (file, fileType) => {
+    if (!file) return "";
+
     const formData = new FormData();
     formData.append("file", file);
     formData.append(
@@ -115,76 +120,68 @@ export default function DocumentSubmissionForm() {
       return response.data.secure_url;
     } catch (error) {
       console.error("Error uploading to Cloudinary:", error);
-      throw new Error("Upload failed");
+      throw new Error(`Upload failed for ${fileType}: ${error.message}`);
     }
   };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isFormValid) {
-      setIsLoading(true);
-      setUploadProgress(0);
+    if (!isFormValid) return;
 
-      try {
-        // Upload each file to Cloudinary
-        const idCardUrl = await uploadToCloudinary(idCard, "id-card");
-        setUploadProgress(33);
+    setIsLoading(true);
+    setUploadProgress(0);
 
-        const scorecardUrl = await uploadToCloudinary(scorecard, "scorecard");
-        setUploadProgress(66);
+    try {
+      // Upload each file to Cloudinary
+      const idCardUrl = await uploadToCloudinary(idCard, "id-card");
+      setUploadProgress(33);
 
-        const profilePhotoUrl = await uploadToCloudinary(
-          profilePhoto,
-          "profile-photo"
-        );
-        setUploadProgress(100);
+      const scorecardUrl = await uploadToCloudinary(scorecard, "scorecard");
+      setUploadProgress(66);
 
-        // Store the Cloudinary URLs
-        const urls = {
-          idCard: idCardUrl,
-          scorecard: scorecardUrl,
-          profilePhoto: profilePhotoUrl,
-        };
+      const profilePhotoUrl = await uploadToCloudinary(
+        profilePhoto,
+        "profile-photo"
+      );
+      setUploadProgress(100);
 
-        setCloudinaryUrls(urls);
+      // Store the Cloudinary URLs
+      const urls = {
+        idCard: idCardUrl,
+        scorecard: scorecardUrl,
+        profilePhoto: profilePhotoUrl,
+      };
 
-        const formData = {
-          idCardUrl,
-          scorecardUrl,
-          profilePhotoUrl,
-          branch,
-          collegeName,
-        };
+      setCloudinaryUrls(urls);
 
-        // Send the form data to your backend or API endpoint
-        const res = await axios.post(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/counsellor/documentInfo`,
-          {
-            email: email,
-            idCardUrl: idCardUrl,
-            marksheetUrl: scorecardUrl,
-            profilePhotoUrl: profilePhotoUrl,
-            branchName: branch,
-            collegeId: 4,
-          }
-        );
+      // Use selected college ID or fallback
+      const collegeId = selectedCollege?.id || 4;
+      const collegeNameToUse = selectedCollege?.name || collegeName;
 
-        console.log("Response from backend:", res.data);
+      // Send the form data to your backend or API endpoint
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/counsellor/documentInfo`,
+        {
+          email: email,
+          idCardUrl: idCardUrl,
+          marksheetUrl: scorecardUrl,
+          profilePhotoUrl: profilePhotoUrl,
+          branchName: branch,
+          collegeId: collegeId,
+          collegeName: collegeNameToUse,
+        }
+      );
 
-        // If you need to send the URLs to your backend, you can do it here
-        // Example: await axios.post('/api/save-document-urls', formData);
+      console.log("Response from backend:", res.data);
 
-        // Show success message
-        setSubmitted(true);
-      } catch (error) {
-        console.error("Error uploading files:", error);
-        alert(
-          "An error occurred while uploading your files. Please try again."
-        );
-      } finally {
-        setIsLoading(false);
-      }
+      // Show success message
+      setSubmitted(true);
+    } catch (error) {
+      console.error("Error uploading files:", error);
+      alert("An error occurred while uploading your files. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -208,30 +205,36 @@ export default function DocumentSubmissionForm() {
                 Your Uploaded Documents:
               </h3>
               <div className="grid grid-cols-3 gap-2">
-                <a
-                  href={cloudinaryUrls.idCard}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-indigo-600 hover:underline text-sm truncate"
-                >
-                  ID Card
-                </a>
-                <a
-                  href={cloudinaryUrls.scorecard}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-indigo-600 hover:underline text-sm truncate"
-                >
-                  Scorecard
-                </a>
-                <a
-                  href={cloudinaryUrls.profilePhoto}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-indigo-600 hover:underline text-sm truncate"
-                >
-                  Profile Photo
-                </a>
+                {cloudinaryUrls.idCard && (
+                  <a
+                    href={cloudinaryUrls.idCard}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-indigo-600 hover:underline text-sm truncate"
+                  >
+                    ID Card
+                  </a>
+                )}
+                {cloudinaryUrls.scorecard && (
+                  <a
+                    href={cloudinaryUrls.scorecard}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-indigo-600 hover:underline text-sm truncate"
+                  >
+                    Scorecard
+                  </a>
+                )}
+                {cloudinaryUrls.profilePhoto && (
+                  <a
+                    href={cloudinaryUrls.profilePhoto}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-indigo-600 hover:underline text-sm truncate"
+                  >
+                    Profile Photo
+                  </a>
+                )}
               </div>
             </div>
             <button className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-200 font-medium">
@@ -485,23 +488,31 @@ export default function DocumentSubmissionForm() {
                   </div>
                 </div>
 
-                {/* College Name */}
+                {/* College Selection */}
                 <div className="space-y-2">
                   <label
-                    htmlFor="collegeName"
+                    htmlFor="college"
                     className="flex items-center text-sm font-medium text-gray-700"
                   >
                     <Building2 size={16} className="mr-2 text-indigo-600" />
-                    College Name
+                    College
                   </label>
-                  <input
-                    id="collegeName"
-                    type="text"
-                    value={collegeName}
-                    onChange={(e) => setCollegeName(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all duration-200 outline-none"
-                    placeholder="Enter your college name"
-                  />
+                  <div>
+                    <CollegeAutocomplete onSelectCollege={setSelectedCollege} />
+                  </div>
+
+                  {selectedCollege && (
+                    <div className="mt-2 p-2 bg-gray-50 rounded">
+                      <p className="text-sm font-medium">
+                        {selectedCollege.name}
+                      </p>
+                      <input
+                        type="hidden"
+                        name="collegeId"
+                        value={selectedCollege.id}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
 

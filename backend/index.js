@@ -9,6 +9,7 @@ const path = require("path");
 const cousellorRoute = require("./src/route/Counsellor");
 const otpRoute = require("./src/route/otp");
 const authRoute = require("./src/route/auth");
+const collegeRoute = require("./src/route/college");
 
 const e = require("express");
 
@@ -33,6 +34,7 @@ app.use(
 app.use("/api", otpRoute);
 app.use("/api", authRoute);
 app.use("/api/counsellor", cousellorRoute);
+app.use("/api/college", collegeRoute);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
