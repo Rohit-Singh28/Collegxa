@@ -4,10 +4,13 @@ const register = require("../controller/counsellor/register");
 const documentInfo = require("../controller/counsellor/documentInfo");
 const wrapAsync = require("../../utils/wrapasyn");
 const { AuthenticateUser } = require("../../middleware/auth");
+const homeCounsellor = require("../controller/counsellor/homeCousellor");
 const router = express.Router();
 
 router.post("/verify", wrapAsync(verification));
 router.post("/register", wrapAsync(register));
 router.post("/documentInfo", wrapAsync(documentInfo));
+
+router.get("/homeCounsellor", wrapAsync(homeCounsellor));
 
 module.exports = router;

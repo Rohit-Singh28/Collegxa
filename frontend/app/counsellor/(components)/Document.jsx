@@ -166,7 +166,7 @@ export default function DocumentSubmissionForm() {
             marksheetUrl: scorecardUrl,
             profilePhotoUrl: profilePhotoUrl,
             branchName: branch,
-            collegeId: 1,
+            collegeId: 4,
           }
         );
 

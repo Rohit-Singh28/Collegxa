@@ -7,6 +7,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// counsellor and registration access models
+
 model RegistrationAccess {
   email      String      @id @unique
   privateKey String      @unique
@@ -33,14 +35,52 @@ model Document {
 }
 
 model Counsellor {
-  id         Int      @id @default(autoincrement())
-  name       String
-  password   String?
-  phone      String   @db.VarChar(10)
-  email      String   @unique
-  documentId Int?     @unique
-  createdAt  DateTime @default(now())
+  id              Int              @id @default(autoincrement())
+  name            String
+  password        String?
+  phone           String           @db.VarChar(10)
+  email           String           @unique
+  documentId      Int?             @unique
+  createdAt       DateTime         @default(now())
+  sessionRequests SessionRequest[]
 
   document           Document?          @relation(fields: [documentId], references: [id])
   registrationAccess RegistrationAccess @relation(fields: [email], references: [email])
+}
+
+// student models
+model Student {
+  id              Int              @id @default(autoincrement())
+  name            String
+  email           String           @unique
+  phone           String           @db.VarChar(10)
+  passwordHash    String
+  createdAt       DateTime         @default(now())
+  sessionRequests SessionRequest[]
+}
+
+// session request models
+
+model SessionRequest {
+  id              Int      @id @default(autoincrement())
+  studentId       Int
+  counsellorId    Int
+  chatSessionCode String   @unique
+  status          String   @default("pending")
+  createdAt       DateTime @default(now())
+
+  student          Student           @relation(fields: [studentId], references: [id])
+  counsellor       Counsellor        @relation(fields: [counsellorId], references: [id])
+  completedSession CompletedSession?
+}
+
+model CompletedSession {
+  id               Int      @id @default(autoincrement())
+  sessionRequestId Int      @unique
+  startedAt        DateTime
+  endedAt          DateTime
+  studentFeedback  String?
+  rating           Int?
+
+  sessionRequest SessionRequest @relation(fields: [sessionRequestId], references: [id])
 }

@@ -11,6 +11,8 @@ const documentInfo = async (req, res) => {
     collegeId,
   } = req.body;
 
+  console.log("Request body:", req.body);
+
   if (
     !email ||
     !idCardUrl ||
