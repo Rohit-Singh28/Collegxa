@@ -8,6 +8,7 @@ const path = require("path");
 
 const cousellorRoute = require("./src/route/Counsellor");
 const otpRoute = require("./src/route/otp");
+const authRoute = require("./src/route/auth");
 
 const e = require("express");
 
@@ -20,9 +21,17 @@ app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan("common"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:3000", // Your frontend URL
+    credentials: true, // Allow credentials (cookies)
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 app.use("/api", otpRoute);
+app.use("/api", authRoute);
 app.use("/api/counsellor", cousellorRoute);
 
 app.get("/", (req, res) => {

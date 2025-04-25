@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext } from "react";
+import React, { use, useContext } from "react";
 import { useState, useEffect } from "react";
 import axios from "axios"; // Make sure to install axios: npm install axios
 import {
@@ -149,16 +149,6 @@ export default function DocumentSubmissionForm() {
 
         setCloudinaryUrls(urls);
 
-        // In a real app, you would save these URLs to a database
-        // console.log("Form submitted with Cloudinary URLs:", {
-        //   idCardUrl,
-        //   scorecardUrl,
-        //   profilePhotoUrl,
-        //   branch,
-        //   collegeName,
-        // });
-
-        // Create an object with all form data
         const formData = {
           idCardUrl,
           scorecardUrl,
@@ -176,7 +166,7 @@ export default function DocumentSubmissionForm() {
             marksheetUrl: scorecardUrl,
             profilePhotoUrl: profilePhotoUrl,
             branchName: branch,
-            collegeId: 1,
+            collegeId: 4,
           }
         );
 
