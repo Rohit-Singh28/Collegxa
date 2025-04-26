@@ -4,7 +4,7 @@ import { counsellorContext } from "../_context/counsellorContext";
 
 const layout = ({ children }) => {
   const [counsellor, setCounsellor] = useState({
-    email: "rohitsingh450718@gmail.com",
+    email: "",
   });
   return (
     <div>

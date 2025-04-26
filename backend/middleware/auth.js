@@ -4,6 +4,8 @@ const wrapAsync = require("../utils/wrapasyn");
 const AuthenticateUser = wrapAsync(async (req, res, next) => {
   const token = req.cookies?.jwttoken;
   const t = req.cookies;
+  // console.log("Token", token);
+
   if (!token) {
     return res.status(200).json({
       message: "Login in to continue..",
