@@ -3,8 +3,13 @@ import Hero from "./(components)/Hero";
 import Stats from "./(components)/Stats";
 import MeetCounsellor from "./(components)/MeetCounsellor";
 import ChooseUs from "./(components)/ChooseUs";
+import { studentContext } from "../_context/studentContext";
+import { useContext } from "react";
 
 export default function HomePage() {
+  // const { student } = useContext(studentContext);
+  // console.log(student);
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* hero */}

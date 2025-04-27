@@ -11,6 +11,8 @@ const layout = ({ children }) => {
     id: "",
   });
 
+  // console.log(student);
+
   const fetchStudentInfo = async () => {
     try {
       const res = await axios.get(
@@ -24,6 +26,7 @@ const layout = ({ children }) => {
       );
       if (res.data.success) {
         setStudent(res.data.data);
+        // console.log(res.data.data); // Log the student data to the console
       } // Log the student data to the console
     } catch (error) {
       console.error("Error fetching student info:", error);

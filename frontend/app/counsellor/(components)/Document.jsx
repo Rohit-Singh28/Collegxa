@@ -159,11 +159,21 @@ export default function DocumentSubmissionForm() {
       const collegeId = selectedCollege?.id || 4;
       const collegeNameToUse = selectedCollege?.name || collegeName;
 
+      console.log({
+        email: "rohitsingh450718@gmail.com",
+        idCardUrl: idCardUrl,
+        marksheetUrl: scorecardUrl,
+        profilePhotoUrl: profilePhotoUrl,
+        branchName: branch,
+        collegeId: collegeId,
+        // collegeName: collegeNameToUse,
+      });
+
       // Send the form data to your backend or API endpoint
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/counsellor/documentInfo`,
         {
-          email: email,
+          email: email || "rohitsingh450718@gmail.com",
           idCardUrl: idCardUrl,
           marksheetUrl: scorecardUrl,
           profilePhotoUrl: profilePhotoUrl,
