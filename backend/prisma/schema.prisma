@@ -44,6 +44,10 @@ model Counsellor {
   createdAt       DateTime         @default(now())
   sessionRequests SessionRequest[]
 
+  // Chat relationships
+  sentChats     Chat[] @relation("CounsellorSender")
+  receivedChats Chat[] @relation("CounsellorReceiver")
+
   document           Document?          @relation(fields: [documentId], references: [id])
   registrationAccess RegistrationAccess @relation(fields: [email], references: [email])
 }
@@ -57,6 +61,10 @@ model Student {
   passwordHash    String
   createdAt       DateTime         @default(now())
   sessionRequests SessionRequest[]
+
+  // Chat relationships
+  sentChats     Chat[] @relation("StudentSender")
+  receivedChats Chat[] @relation("StudentReceiver")
 }
 
 // session request models
@@ -83,4 +91,34 @@ model CompletedSession {
   rating           Int?
 
   sessionRequest SessionRequest @relation(fields: [sessionRequestId], references: [id])
+}
+
+model Chat {
+  id        Int      @id @default(autoincrement())
+  message   String   @db.Text
+  createdAt DateTime @default(now())
+
+  // Sender fields (only one will be used)
+  studentSenderId    Int?
+  counsellorSenderId Int?
+
+  // Receiver fields (only one will be used)
+  studentReceiverId    Int?
+  counsellorReceiverId Int?
+
+  // Use named relations for different sender/receiver types
+  studentSender    Student?    @relation("StudentSender", fields: [studentSenderId], references: [id])
+  counsellorSender Counsellor? @relation("CounsellorSender", fields: [counsellorSenderId], references: [id])
+
+  studentReceiver    Student?    @relation("StudentReceiver", fields: [studentReceiverId], references: [id])
+  counsellorReceiver Counsellor? @relation("CounsellorReceiver", fields: [counsellorReceiverId], references: [id])
+
+  // Add an enum field to identify the message type
+  senderType   String? // "STUDENT" or "COUNSELLOR"
+  receiverType String? // "STUDENT" or "COUNSELLOR"
+
+  @@index([studentSenderId])
+  @@index([counsellorSenderId])
+  @@index([studentReceiverId])
+  @@index([counsellorReceiverId])
 }
