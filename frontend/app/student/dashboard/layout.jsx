@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Sidebar from "./(components)/Sidebar";
 import Chat from "./(components)/ChatsSection";
+import MeetCounsellor from "../(components)/MeetCounsellor";
 
 export default function Dashboard() {
   const [activeSection, setActiveSection] = useState("Chats");
@@ -15,8 +16,8 @@ export default function Dashboard() {
       //     return <SessionsSection />;
       //   case "Student Info":
       //     return <StudentInfoSection />;
-      //   case "Suggested Counsellor":
-      //     return <SuggestedCounsellorSection />;
+      case "Suggested Counsellor":
+        return <MeetCounsellor />;
       //   default:
       //     return <ChatsSection />;
     }

@@ -48,6 +48,16 @@ export default function LoginPage() {
       console.log(res);
 
       if (res.data.success) {
+        console.log("hiii");
+
+        // Store token in localStorage as a backup authentication method
+        localStorage.setItem("token", res.data.token);
+
+        // Update the student context with user data
+        if (res.data.user) {
+          setStudent(res.data.user);
+        }
+
         toast.success("Login successful! Redirecting...", {
           position: "top-right",
           autoClose: 2000,
@@ -57,14 +67,9 @@ export default function LoginPage() {
           draggable: true,
         });
 
-        // Still store token in localStorage as a backup authentication method
-        localStorage.setItem("token", res.data.token);
-
-        // Check if the cookie is set
-        // console.log("Cookies received:", document.cookie);
-
+        // Give a bit more time for context to update before redirecting
         setTimeout(() => {
-          router.push("/dashboard");
+          router.push("/student/dashboard");
         }, 2000);
       } else {
         toast.error(res.data.message || "Invalid credentials", {
@@ -88,6 +93,8 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   };
+
+  // console.log(student);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12">

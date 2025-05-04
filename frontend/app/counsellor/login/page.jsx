@@ -62,7 +62,7 @@ export default function LoginPage() {
         console.log("Cookies received:", document.cookie);
 
         setTimeout(() => {
-          router.push("/dashboard");
+          router.push("/counsellor/dashboard");
         }, 2000);
       } else {
         toast.error(res.data.message || "Invalid credentials", {
