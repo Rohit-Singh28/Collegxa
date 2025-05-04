@@ -42,9 +42,9 @@ const layout = ({ children }) => {
       <studentContext.Provider value={{ student, setStudent }}>
         <Header />
         {children}
-        <div>
+        {/* <div>
           <Footer />
-        </div>
+        </div> */}
       </studentContext.Provider>
     </div>
   );

@@ -24,7 +24,7 @@ const Header = () => {
             Home
           </a>
           <a
-            href="#"
+            href="/student/dashboard"
             className="text-gray-700 hover:text-purple-600 font-medium"
           >
             Dashboard
