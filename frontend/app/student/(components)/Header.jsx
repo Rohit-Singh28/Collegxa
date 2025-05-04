@@ -4,14 +4,27 @@ import CollegeAutocomplete from "@/app/search/(components)/collegeAutocomplete";
 import { studentContext } from "@/app/_context/studentContext";
 // Note: Keep your existing axios import for API calls
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const Header = () => {
   const [collegeName, setSelectedCollege] = useState({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const route = useRouter();
 
   const { student } = useContext(studentContext);
 
-  console.log(student);
+  const handleSearch = () => {
+    if (collegeName) {
+      console.log("Selected College Name:", collegeName.name); // Debugging line
+
+      const collegeId = encodeURIComponent(collegeName.name);
+      console.log("Selected College ID:", collegeId); // Debugging line
+
+      route.push(`/student/${collegeId}`);
+    } else {
+      alert("Please select a college to search.");
+    }
+  };
 
   useEffect(() => {
     if (student?.email != "" && Object.keys(student).length > 0) {
@@ -83,8 +96,11 @@ const Header = () => {
         </div>
 
         {/* Search Bar */}
-        <div className="flex items-center rounded-md px-2 py-1 w-full md:w-1/3">
+        <div className="flex items-center rounded-md px-2 py-1 w-full md:w-1/3 gap-4">
           <CollegeAutocomplete onSelectCollege={setSelectedCollege} />
+          <button className=" border " onClick={handleSearch}>
+            search
+          </button>
         </div>
 
         {/* Conditional Login/Logout Button */}
