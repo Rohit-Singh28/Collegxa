@@ -34,6 +34,8 @@ export default function Chat() {
   const userType = "STUDENT";
   const recipientType = "COUNSELLOR";
 
+  console.log(userId, "userId from context");
+
   // Initialize socket when userId is available
   useEffect(() => {
     if (userId) {

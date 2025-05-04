@@ -1,11 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { Star, MessageCircle, ChevronRight, Calendar } from "lucide-react";
+import {
+  Star,
+  MessageCircle,
+  ChevronRight,
+  Calendar,
+  UserRound,
+} from "lucide-react";
 import axios from "axios";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const MeetCounsellor = () => {
   // Counselor data
   const [counsellors, setCounselors] = useState([]);
+  const route = useRouter();
+
+  const navigateToCounselorDetails = (counselorId) => {
+    route.push(`/student/counsellorDetails/${counselorId}`);
+  };
 
   const fetchCounselors = async () => {
     try {
@@ -13,7 +25,7 @@ const MeetCounsellor = () => {
         `${process.env.NEXT_PUBLIC_BASE_URL}/counsellor/homecounsellor`
       );
       setCounselors(res.data);
-      console.log(res.data);
+      // console.log(res.data);
     } catch (error) {
       console.error("Error fetching counselors:", error);
     }
@@ -53,13 +65,12 @@ const MeetCounsellor = () => {
               <div className="p-6">
                 <div className="flex items-center mb-4">
                   <div className="relative h-20 w-20 rounded-full overflow-hidden mr-4 border-2 border-purple-100">
-                    <Image
+                    <img
                       src={
                         counselor?.profilePhoto ||
                         "https://via.placeholder.com/150"
                       }
                       alt={`${counselor?.name}'s profile`}
-                      fill
                       className="object-cover"
                     />
                   </div>
@@ -85,8 +96,11 @@ const MeetCounsellor = () => {
                     <Calendar className="h-4 w-4 mr-2" />
                     Book Session
                   </button>
-                  <button className="px-3 py-3 border border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors">
-                    <MessageCircle className="h-5 w-5" />
+                  <button
+                    className="px-3 py-3 border border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors cursor-pointer"
+                    onClick={() => navigateToCounselorDetails(counselor.id)}
+                  >
+                    <UserRound className="h-5 w-5" />
                   </button>
                 </div>
               </div>

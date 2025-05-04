@@ -133,7 +133,6 @@ export default function DocumentSubmissionForm() {
     setUploadProgress(0);
 
     try {
-      // Upload each file to Cloudinary
       const idCardUrl = await uploadToCloudinary(idCard, "id-card");
       setUploadProgress(33);
 
@@ -146,7 +145,6 @@ export default function DocumentSubmissionForm() {
       );
       setUploadProgress(100);
 
-      // Store the Cloudinary URLs
       const urls = {
         idCard: idCardUrl,
         scorecard: scorecardUrl,

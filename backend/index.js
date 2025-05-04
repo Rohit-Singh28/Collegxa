@@ -59,7 +59,6 @@ const io = new Server(server, {
 const userSocketMap = {};
 
 // Socket.io connection handler
-// index.js - Updated private-message handler
 
 io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId;

@@ -1,7 +1,50 @@
-import React from "react";
-import { Search, LogOut } from "lucide-react";
+import React, { useContext, useState, useEffect } from "react";
+import { Search, LogOut, LogIn } from "lucide-react";
+import CollegeAutocomplete from "@/app/search/(components)/collegeAutocomplete";
+import { studentContext } from "@/app/_context/studentContext";
+// Note: Keep your existing axios import for API calls
+import axios from "axios";
 
 const Header = () => {
+  const [collegeName, setSelectedCollege] = useState({});
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const { student } = useContext(studentContext);
+
+  console.log(student);
+
+  useEffect(() => {
+    if (student?.email != "" && Object.keys(student).length > 0) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [student]);
+
+  const handleLogout = async () => {
+    try {
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/student/logout`,
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (res.data.success) {
+        setIsLoggedIn(false);
+        window.location.href = "/login";
+      }
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
+
+  const handleLogin = () => {
+    window.location.href = "/student/login";
+  };
+
   return (
     <nav className="bg-white shadow-md py-4 px-6 md:px-10 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
@@ -23,13 +66,14 @@ const Header = () => {
           >
             Home
           </a>
-          <a
-            href="/student/dashboard"
-            className="text-gray-700 hover:text-purple-600 font-medium"
-          >
-            Dashboard
-          </a>
-
+          {isLoggedIn && (
+            <a
+              href="/student/dashboard"
+              className="text-gray-700 hover:text-purple-600 font-medium"
+            >
+              Dashboard
+            </a>
+          )}
           <a
             href="#"
             className="text-gray-700 hover:text-purple-600 font-medium"
@@ -39,20 +83,28 @@ const Header = () => {
         </div>
 
         {/* Search Bar */}
-        <div className="relative w-full md:w-1/3">
-          <input
-            type="text"
-            placeholder="Search college name"
-            className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          />
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+        <div className="flex items-center rounded-md px-2 py-1 w-full md:w-1/3">
+          <CollegeAutocomplete onSelectCollege={setSelectedCollege} />
         </div>
 
-        {/* Logout Button */}
-        <button className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-purple-600 transition-colors">
-          <LogOut className="h-5 w-5" />
-          <span>Logout</span>
-        </button>
+        {/* Conditional Login/Logout Button */}
+        {isLoggedIn ? (
+          <button
+            className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-purple-600 transition-colors"
+            onClick={handleLogout}
+          >
+            <LogOut className="h-5 w-5" />
+            <span>Logout</span>
+          </button>
+        ) : (
+          <button
+            className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-purple-600 transition-colors"
+            onClick={handleLogin}
+          >
+            <LogIn className="h-5 w-5" />
+            <span>Login</span>
+          </button>
+        )}
       </div>
     </nav>
   );
