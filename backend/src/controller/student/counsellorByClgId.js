@@ -3,6 +3,7 @@ const prisma = new PrismaClient();
 
 const counsellorByClgId = async (req, res) => {
   const { collegeId } = req.params;
+  console.log(collegeId);
   if (!collegeId) {
     return res.status(400).json({
       message: "College ID is required",
@@ -10,9 +11,9 @@ const counsellorByClgId = async (req, res) => {
     });
   }
 
-  const college = await prisma.college.findUnique({
+  const college = await prisma.college.findMany({
     where: {
-      id: parseInt(collegeId),
+      name: collegeId,
     },
   });
 
@@ -26,16 +27,38 @@ const counsellorByClgId = async (req, res) => {
   const counsellors = await prisma.counsellor.findMany({
     where: {
       document: {
-        collegeId: parseInt(collegeId),
+        college: {
+          name: collegeId,
+        },
+      },
+    },
+    select: {
+      name: true,
+      id: true,
+      document: {
+        select: {
+          profilePhotoUrl: true,
+          branchName: true,
+          idCardUrl: true,
+          college: {
+            select: {
+              name: true,
+              sessionFee: true,
+            },
+          },
+        },
       },
     },
   });
-  if (!counsellors) {
+  if (!counsellors || counsellors.length === 0) {
     return res.status(404).json({
       message: "Counsellors not found",
       success: false,
     });
   }
+
+  console.log(counsellors);
+
   res.json(counsellors);
 };
 
