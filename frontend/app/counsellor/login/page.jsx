@@ -274,7 +274,7 @@ export default function LoginPage() {
             <button
               type="button"
               className="text-blue-600 hover:text-blue-800 hover:underline font-medium"
-              onClick={() => router.push("/register")}
+              onClick={() => router.push("verify/")}
             >
               Create account
             </button>

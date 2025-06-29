@@ -7,6 +7,7 @@ const { AuthenticateUser } = require("../../middleware/auth");
 const homeCounsellor = require("../controller/counsellor/homeCousellor");
 const counsellorInfo = require("../controller/counsellor/info");
 const isCousellorInDb = require("../controller/counsellor/isCousellorInDb");
+const logout = require("../controller/user/logout");
 const router = express.Router();
 
 router.post("/verify", wrapAsync(verification));
@@ -16,5 +17,6 @@ router.post("/documentInfo", wrapAsync(documentInfo));
 
 router.get("/homeCounsellor", wrapAsync(homeCounsellor));
 router.get("/info", AuthenticateUser, wrapAsync(counsellorInfo));
+router.get("/logout", AuthenticateUser, wrapAsync(logout));
 
 module.exports = router;
