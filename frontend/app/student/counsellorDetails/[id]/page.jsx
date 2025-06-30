@@ -49,6 +49,70 @@ const CounsellorProfilePage = () => {
     }
   };
 
+  const loadRazorpay = async () => {
+    return new Promise((resolve) => {
+      const script = window.document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      window.document.body.appendChild(script);
+    });
+  };
+
+  const handlePayment = async (e) => {
+    const response = await loadRazorpay();
+
+    if (!response) {
+      alert("Razorpay SDK failed to load");
+      return;
+    }
+
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/payment`,
+      {
+        amount: counsellorDetails?.document?.college.sessionFee,
+        counsellorId: counsellorId,
+      },
+      {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!res.data.success) {
+      toast.error("Failed to initiate payment. Please try again.");
+      return;
+    }
+
+    const order = res?.data.order;
+
+    console.log(order);
+
+    const options = {
+      key: "rzp_test_0j6T2dORLBXPyP", // Enter the Key ID generated from the Dashboard
+      amount: order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+      currency: "INR",
+      name: "Collegxa",
+      description: "Test Transaction",
+      image:
+        "https://www.google.com/imgres?q=logo&imgurl=https%3A%2F%2Fimg.freepik.com%2Ffree-vector%2Fbird-colorful-logo-gradient-vector_343694-1365.jpg%3Fsemt%3Dais_items_boosted%26w%3D740&imgrefurl=https%3A%2F%2Fwww.freepik.com%2Ffree-photos-vectors%2Flogo-concept&docid=Y47QCKmix33cWM&tbnid=x6VzhJUSIQkBOM&vet=12ahUKEwiu497BwJmOAxVrsFYBHUjNKb8QM3oECBsQAA..i&w=740&h=740&hcb=2&ved=2ahUKEwiu497BwJmOAxVrsFYBHUjNKb8QM3oECBsQAA",
+      order_id: order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+      callback_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/verify`,
+
+      notes: {
+        address: "Razorpay Corporate Office",
+      },
+      theme: {
+        color: "#121212",
+      },
+    };
+
+    const razorpay = new window.Razorpay(options);
+    razorpay.open();
+  };
+
   useEffect(() => {
     fetchCounsellorDetails();
   }, [counsellorId]);
@@ -264,7 +328,10 @@ const CounsellorProfilePage = () => {
 
             {/* Book Session Button */}
             <div className="mt-12 flex justify-center">
-              <button className="px-10 py-4 bg-[#9810FA] text-white font-semibold text-lg rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200 shadow-lg">
+              <button
+                className="px-10 py-4 bg-[#9810FA] text-white font-semibold text-lg rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200 shadow-lg"
+                onClick={handlePayment}
+              >
                 Book a Session
               </button>
             </div>

@@ -45,8 +45,10 @@ model Counsellor {
   sessionRequests SessionRequest[]
 
   // Chat relationships
-  sentChats     Chat[] @relation("CounsellorSender")
-  receivedChats Chat[] @relation("CounsellorReceiver")
+  sentChats        Chat[]                   @relation("CounsellorSender")
+  receivedChats    Chat[]                   @relation("CounsellorReceiver")
+  payment          Payment[]
+  counsellorAccess CousellorStudentAccess[]
 
   document           Document?          @relation(fields: [documentId], references: [id])
   registrationAccess RegistrationAccess @relation(fields: [email], references: [email])
@@ -63,8 +65,10 @@ model Student {
   sessionRequests SessionRequest[]
 
   // Chat relationships
-  sentChats     Chat[] @relation("StudentSender")
-  receivedChats Chat[] @relation("StudentReceiver")
+  sentChats        Chat[]                   @relation("StudentSender")
+  receivedChats    Chat[]                   @relation("StudentReceiver")
+  payments         Payment[]
+  counsellorAccess CousellorStudentAccess[]
 }
 
 // session request models
@@ -91,6 +95,32 @@ model CompletedSession {
   rating           Int?
 
   sessionRequest SessionRequest @relation(fields: [sessionRequestId], references: [id])
+}
+
+model Payment {
+  id           Int        @id @default(autoincrement())
+  counsellorId Int
+  studentId    Int
+  amount       Int
+  orderID      String     @unique
+  paymentDate  DateTime   @default(now())
+  paymentID    String?    @unique
+  signature    String?
+  status       String     @default("pending")
+  counsellor   Counsellor @relation(fields: [counsellorId], references: [id])
+  student      Student    @relation(fields: [studentId], references: [id])
+}
+
+model CousellorStudentAccess {
+  id           Int      @id @default(autoincrement())
+  studentId    Int
+  counsellorId Int
+  orderID      String   @unique
+  IsAllowed    String   @default("False")
+  createdAt    DateTime @default(now())
+
+  student    Student    @relation(fields: [studentId], references: [id])
+  counsellor Counsellor @relation(fields: [counsellorId], references: [id])
 }
 
 model Chat {

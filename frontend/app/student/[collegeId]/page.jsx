@@ -75,16 +75,16 @@ const page = () => {
               </div>
 
               <div className="flex gap-2">
-                <button className="flex-1 bg-purple-600 text-white py-3 rounded-lg font-medium hover:bg-purple-700 transition-colors flex items-center justify-center">
+                <button
+                  className="flex-1 bg-purple-600 text-white py-3 rounded-lg font-medium hover:bg-purple-700 transition-colors flex items-center justify-center"
+                  onClick={() => navigateToCounselorDetails(counselor.id)}
+                >
                   <Calendar className="h-4 w-4 mr-2" />
                   Book Session
                 </button>
-                <button
-                  className="px-3 py-3 border border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors cursor-pointer"
-                  onClick={() => navigateToCounselorDetails(counselor.id)}
-                >
+                {/* <button className="px-3 py-3 border border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors cursor-pointer">
                   <UserRound className="h-5 w-5" />
-                </button>
+                </button> */}
               </div>
             </div>
           </div>
