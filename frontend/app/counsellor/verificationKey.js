@@ -1,1 +1,8 @@
-export const validKeys = ["ABC123", "DEF456", "123456", "JKL012", "MNO345"];
+export const validKeys = [
+  "ABC123",
+  "DEF456",
+  "123456",
+  "JKL012",
+  "MNO345",
+  "Rohit",
+];

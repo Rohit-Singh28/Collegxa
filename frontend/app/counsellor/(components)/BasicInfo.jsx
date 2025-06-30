@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { counsellorContext } from "@/app/_context/counsellorContext";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -21,6 +22,8 @@ export default function RegisterPage() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const router = useRouter();
 
   useEffect(() => {
     const passwordValid = password.length >= 5;
@@ -56,6 +59,7 @@ export default function RegisterPage() {
         );
 
         console.log(res.data);
+        router.push("/counsellor/information");
       } catch (error) {
         console.error("Error during registration:", error);
       }

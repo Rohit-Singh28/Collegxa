@@ -16,8 +16,12 @@ import {
 } from "lucide-react";
 import { counsellorContext } from "@/app/_context/counsellorContext";
 import CollegeAutocomplete from "@/app/search/(components)/collegeAutocomplete";
+import { useRouter } from "next/navigation";
 
 export default function DocumentSubmissionForm() {
+  // router for navigation
+  const router = useRouter();
+
   // Form state
   const [idCard, setIdCard] = useState(null);
   const [scorecard, setScorecard] = useState(null);
@@ -245,7 +249,12 @@ export default function DocumentSubmissionForm() {
                 )}
               </div>
             </div>
-            <button className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-200 font-medium">
+            <button
+              className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-200 font-medium"
+              onClick={() => {
+                router.push("/counsellor/dashboard");
+              }}
+            >
               Continue
             </button>
           </div>
