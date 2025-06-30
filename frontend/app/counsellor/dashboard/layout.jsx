@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 
-import Sidebar from "./(components)/sidebar/Sidebar";
 import CounselorChat from "./(components)/chat/Chat";
+import Sidebar from "./(components)/sidebar/Sidebar";
 
 export default function Dashboard() {
   const [activeSection, setActiveSection] = useState("Chats");
