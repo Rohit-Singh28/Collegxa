@@ -40,6 +40,8 @@ model Counsellor {
   password        String?
   phone           String           @db.VarChar(10)
   email           String           @unique
+  UPI             String?          @unique
+  isVerified      Boolean          @default(false)
   documentId      Int?             @unique
   createdAt       DateTime         @default(now())
   sessionRequests SessionRequest[]

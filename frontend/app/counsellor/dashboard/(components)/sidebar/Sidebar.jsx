@@ -5,12 +5,7 @@ import { useState } from "react";
 export default function Sidebar({ activeSection, setActiveSection }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const navItems = [
-    "Chats",
-    "Sessions",
-    "Student Info",
-    "Suggested Counsellor",
-  ];
+  const navItems = ["Chats", "Sessions", "User Info", "Suggested Counsellor"];
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);

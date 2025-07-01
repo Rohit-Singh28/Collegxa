@@ -2,11 +2,21 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const counsellorInfo = async (req, res) => {
-  const currentStudent = req.currentUser;
-  const counsellorId = currentStudent.id;
+  const currentCounsellor = req.currentUser;
+  const counsellorId = currentCounsellor.id;
   const counsellor = await prisma.counsellor.findUnique({
     where: {
       id: counsellorId,
+    },
+    include: {
+      document: {
+        include: {
+          documentType: true,
+        },
+        include: {
+          college: true,
+        },
+      },
     },
   });
 
