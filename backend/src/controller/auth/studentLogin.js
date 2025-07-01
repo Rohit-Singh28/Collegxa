@@ -61,7 +61,7 @@ const studentLogin = async (req, res) => {
         id: userDetail.id,
       },
       process.env.JWT_SECRET_KEY,
-      { expiresIn: "8h" }
+      { expiresIn: "96h" }
     );
 
     // Set cookie options

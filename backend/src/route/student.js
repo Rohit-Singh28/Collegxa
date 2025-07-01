@@ -6,6 +6,7 @@ const studentInfo = require("../controller/student/info");
 const counsellorDetails = require("../controller/student/cousellorInfo");
 const counsellorByClgId = require("../controller/student/counsellorByClgId");
 const logout = require("../controller/user/logout");
+const isCounsellorAllowed = require("../controller/student/IsCounsellorAllowed");
 
 const router = express.Router();
 
@@ -22,5 +23,13 @@ router.get(
 );
 
 router.get("/logout", AuthenticateUser, wrapAsync(logout));
+
+// counsellor and course related routes
+
+router.get(
+  "/course/:counsellorId",
+  AuthenticateUser,
+  wrapAsync(isCounsellorAllowed)
+);
 
 module.exports = router;

@@ -34,8 +34,6 @@ export default function Chat() {
   const userType = "STUDENT";
   const recipientType = "COUNSELLOR";
 
-  console.log(userId, "userId from context");
-
   // Initialize socket when userId is available
   useEffect(() => {
     if (userId) {
@@ -204,16 +202,17 @@ export default function Chat() {
   }, []);
 
   // Verify if counselor exists in database
-  const verifyCounselor = async (counselorId) => {
+  const verifyStudentCounselorAccess = async (counselorId) => {
     try {
       const response = await axios.get(
         `${
           process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4040"
-        }/api/counsellor/verify/${counselorId}`,
+        }/api/student/course/${counselorId}`,
         { withCredentials: true }
       );
+      // console.log("hii", response.data);
 
-      return response.data.exits;
+      return response.data;
     } catch (error) {
       console.error("Error verifying counselor:", error);
       return false;
@@ -286,11 +285,13 @@ export default function Chat() {
 
     // Verify if counselor exists in database
     setLoading(true);
-    const counselorExists = await verifyCounselor(counselorId);
+    const counselorAllowed = await verifyStudentCounselorAccess(counselorId);
+    // console.log("counsellor", counselorAllowed);
+
     setLoading(false);
 
-    if (!counselorExists) {
-      setErrorMessage("Counselor ID not found. Please check and try again.");
+    if (!counselorAllowed.success) {
+      setErrorMessage(counselorAllowed.message);
       setShowError(true);
       return;
     }
