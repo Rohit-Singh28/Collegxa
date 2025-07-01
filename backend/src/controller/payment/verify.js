@@ -36,7 +36,7 @@ const verify = async (req, res) => {
         orderID: razorpay_order_id,
       },
       data: {
-        IsAllowed: "True",
+        IsAllowed: "TRUE",
       },
     });
 
