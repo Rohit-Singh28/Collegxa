@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { counsellorContext } from "../_context/counsellorContext";
 import axios from "axios";
-import Header from "./(components)/header";
 
 const layout = ({ children }) => {
   const [counsellor, setCounsellor] = useState({
@@ -38,7 +37,6 @@ const layout = ({ children }) => {
   return (
     <div>
       <counsellorContext.Provider value={{ counsellor, setCounsellor }}>
-        <Header />
         {children}
       </counsellorContext.Provider>
     </div>

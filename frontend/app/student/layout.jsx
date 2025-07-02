@@ -40,7 +40,6 @@ const layout = ({ children }) => {
   return (
     <div>
       <studentContext.Provider value={{ student, setStudent }}>
-        <Header />
         {children}
         {/* <div>
           <Footer />

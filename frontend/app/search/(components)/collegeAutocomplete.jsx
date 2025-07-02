@@ -49,7 +49,7 @@ export default function CollegeAutocomplete({ onSelectCollege }) {
           params: {
             term: inputValue,
           },
-          withCredentials: true, // Optional if backend requires cookies
+          withCredentials: true,
         }
       );
 

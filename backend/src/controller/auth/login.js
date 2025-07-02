@@ -58,7 +58,7 @@ const login = async (req, res) => {
         id: userDetail.id,
       },
       process.env.JWT_SECRET_KEY,
-      { expiresIn: "8h" }
+      { expiresIn: "168h" }
     );
 
     // Set cookie options
@@ -66,7 +66,7 @@ const login = async (req, res) => {
       httpOnly: true,
       secure: true, // Only use secure in production
       sameSite: "strict", // Changed from "None" to "strict" for better compatibility
-      maxAge: 8 * 60 * 60 * 1000, // 8 hours
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 168 hours
     };
 
     // Set cookie and send response
