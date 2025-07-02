@@ -11,6 +11,7 @@ import {
   Save,
   X,
 } from "lucide-react";
+import { toast } from "react-toastify";
 
 const UserInfo = () => {
   const [counsellorData, setCounsellorData] = useState([]);
@@ -51,20 +52,25 @@ const UserInfo = () => {
   };
 
   const handleSaveUPI = async () => {
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/counsellor/update`,
-      {
-        UPI: tempUpiId,
-      },
-      {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "application/json",
+    try {
+      const res = await axios.put(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/counsellor/update`,
+        {
+          UPI: tempUpiId,
         },
-      }
-    );
-    setUpiId(tempUpiId);
-    setIsEditingUPI(false);
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(res.status);
+      setUpiId(tempUpiId);
+      setIsEditingUPI(false);
+    } catch (error) {
+      console.log(error.response?.data?.message || "Failed to update UPI ID");
+    }
   };
 
   const handleCancelUPI = () => {
@@ -84,7 +90,7 @@ const UserInfo = () => {
     fetchCounsellorDetails();
   }, []);
 
-  console.log("Counsellor Details:", counsellorData);
+  // console.log("Counsellor Details:", counsellorData);
 
   if (loading) {
     return (
@@ -231,7 +237,9 @@ const UserInfo = () => {
                 ) : (
                   <div className="flex items-center justify-between">
                     <p className="font-medium text-gray-800">
-                      {upiId || "Not configured"}
+                      {tempUpiId
+                        ? tempUpiId
+                        : counsellorData.UPI || "Not configured"}
                     </p>
                     <button
                       onClick={handleEditUPI}

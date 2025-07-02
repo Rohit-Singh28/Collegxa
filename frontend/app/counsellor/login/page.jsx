@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+import Header from "@/app/(components)/header/Header";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -88,9 +89,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12">
+    <div className="flex min-h-screen items-center justify-center bg-[#F2F7FD] px-4 py-12">
+      <Header />
       <ToastContainer />
-
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg overflow-hidden">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-8 text-white">

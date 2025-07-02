@@ -439,7 +439,7 @@ export default function Chat() {
         } w-full md:w-1/3 lg:w-1/4 border-r border-gray-200 bg-white flex flex-col transition-transform duration-300 ease-in-out absolute md:relative z-20 h-full`}
       >
         {/* Header */}
-        <div className="p-3 bg-[#8200DB] text-white flex justify-between items-center">
+        <div className="p-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white flex justify-between items-center">
           <h2 className="text-xl font-medium">Chats</h2>
           <button
             onClick={() => setShowAddCounselor(true)}
@@ -455,7 +455,7 @@ export default function Chat() {
             <input
               type="text"
               placeholder="Search counselors..."
-              className="w-full p-2 pl-10 rounded-lg border-none bg-white text-sm focus:outline-none focus:ring-1 focus:ring-[#8200DB]"
+              className="w-full p-2 pl-10 rounded-lg border-none bg-white text-sm focus:outline-none focus:ring-1 focus:ring-[#6ee6b2]"
               value={searchCounselor}
               onChange={(e) => setSearchCounselor(e.target.value)}
             />
@@ -469,7 +469,7 @@ export default function Chat() {
         <div className="flex-1 overflow-y-auto">
           {filteredCounselors.length === 0 ? (
             <div className="p-6 text-center text-gray-500">
-              <div className="w-16 h-16 mx-auto mb-4 bg-purple-100 rounded-full flex items-center justify-center">
+              <div className="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="32"
@@ -480,7 +480,7 @@ export default function Chat() {
                   strokeWidth="1.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="text-[#8200DB]"
+                  className="text-[#38de8b]"
                 >
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                   <circle cx="9" cy="7" r="4"></circle>
@@ -501,7 +501,7 @@ export default function Chat() {
                 onClick={() => setSelectedCounselor(counselor)}
               >
                 <div className="flex items-center">
-                  <div className="w-12 h-12 rounded-full bg-[#8200DB] flex items-center justify-center text-white shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-[#00A998] flex items-center justify-center text-white shrink-0">
                     {counselor.name.charAt(0).toUpperCase()}
                   </div>
                   <div className="ml-3 flex-1 min-w-0">
@@ -509,7 +509,7 @@ export default function Chat() {
                       <p
                         className={`font-medium truncate ${
                           unreadMessages[counselor.id]
-                            ? "text-[#8200DB] font-semibold"
+                            ? "text-[#00A998] font-semibold"
                             : ""
                         }`}
                       >
@@ -531,7 +531,7 @@ export default function Chat() {
                       </p>
                       <div className="flex items-center">
                         {unreadMessages[counselor.id] > 0 && (
-                          <span className="bg-[#8200DB] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center mr-1">
+                          <span className="bg-[#00A998] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center mr-1">
                             {unreadMessages[counselor.id]}
                           </span>
                         )}
@@ -578,7 +578,7 @@ export default function Chat() {
                   </svg>
                 </button>
 
-                <div className="w-10 h-10 rounded-full bg-[#8200DB] flex items-center justify-center text-white">
+                <div className="w-10 h-10 rounded-full bg-[#00A998] flex items-center justify-center text-white">
                   {selectedCounselor.name.charAt(0).toUpperCase()}
                 </div>
                 <div className="ml-3">
@@ -598,14 +598,14 @@ export default function Chat() {
               {loading ? (
                 <div className="flex justify-center items-center h-full">
                   <div className="flex flex-col items-center">
-                    <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#8200DB] border-t-transparent"></div>
+                    <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#00A998] border-t-transparent"></div>
                     <p className="text-gray-500 mt-4">Loading messages...</p>
                   </div>
                 </div>
               ) : chatLog.length === 0 ? (
                 <div className="flex justify-center items-center h-full">
                   <div className="text-center bg-white p-6 rounded-lg shadow-sm max-w-md">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-[#8200DB] bg-opacity-10 rounded-full flex items-center justify-center">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-[#00A998] bg-opacity-10 rounded-full flex items-center justify-center">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="32"
@@ -642,7 +642,7 @@ export default function Chat() {
                       <div
                         className={`p-3 rounded-lg max-w-[75%] shadow-sm ${
                           chat.fromType === userType
-                            ? "bg-[#8200DB] text-white rounded-tr-none"
+                            ? "bg-[#00A998] text-white rounded-tr-none"
                             : "bg-white rounded-tl-none"
                         }`}
                       >
@@ -680,7 +680,7 @@ export default function Chat() {
               {!isAtBottom && selectedCounselor && (
                 <button
                   onClick={scrollToBottom}
-                  className="fixed bottom-20 right-4 md:right-6 z-30 bg-[#8200DB] text-white rounded-full p-3 shadow-lg flex items-center justify-center hover:bg-purple-800 transition-all"
+                  className="fixed bottom-20 right-4 md:right-6 z-30 bg-[#00A998] text-white rounded-full p-3 shadow-lg flex items-center justify-center hover:bg-purple-800 transition-all"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

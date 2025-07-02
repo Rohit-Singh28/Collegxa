@@ -36,20 +36,22 @@ export default function Sidebar({ activeSection, setActiveSection }) {
         <div className="md:hidden bg-white shadow-md">
           <nav className="flex flex-col">
             {navItems.map((item) => (
-              <button
-                key={item}
-                onClick={() => {
-                  setActiveSection(item);
-                  setIsMobileMenuOpen(false);
-                }}
-                className={`p-4 text-left ${
-                  activeSection === item
-                    ? "bg-[#8200DB] text-white"
-                    : "hover:bg-purple-100"
-                }`}
-              >
-                <span className="ml-8">{item}</span>
-              </button>
+              <>
+                <button
+                  key={item}
+                  onClick={() => {
+                    setActiveSection(item);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`p-4 text-left ${
+                    activeSection === item
+                      ? "bg-gradient-to-r from-teal-500 to-teal-600 text-white"
+                      : "hover:bg-gradient-to-r from-teal-50 to-teal-100"
+                  }`}
+                >
+                  <span className="ml-8">{item}</span>
+                </button>
+              </>
             ))}
           </nav>
         </div>
@@ -62,18 +64,22 @@ export default function Sidebar({ activeSection, setActiveSection }) {
         </div>
         <nav className="flex flex-col p-4 space-y-2">
           {navItems.map((item) => (
-            <button
-              key={item}
-              onClick={() => setActiveSection(item)}
-              className={`flex items-center p-3 rounded-md transition-colors ${
-                activeSection === item
-                  ? "bg-[#8200DB] text-white"
-                  : "hover:bg-purple-100"
-              }`}
-            >
-              <div className="w-6 h-6 mr-3">{/* Space for future icons */}</div>
-              <span>{item}</span>
-            </button>
+            <div className="w-full flex flex-col space-y-2" key={item}>
+              <button
+                onClick={() => setActiveSection(item)}
+                className={`flex items-center p-3 rounded-md transition-colors ${
+                  activeSection === item
+                    ? "bg-gradient-to-r from-teal-500 to-teal-600 text-white"
+                    : "hover:bg-gradient-to-r from-teal-50 to-teal-100"
+                }`}
+              >
+                <div className="w-6 h-6 mr-3">
+                  {/* Space for future icons */}
+                </div>
+                <span>{item}</span>
+              </button>
+              <div className="w-full border-t border-gray-400 h-[2px]"></div>
+            </div>
           ))}
         </nav>
       </aside>
