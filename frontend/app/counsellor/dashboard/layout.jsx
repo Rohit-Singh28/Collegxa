@@ -34,7 +34,7 @@ export default function Dashboard() {
           activeSection={activeSection}
           setActiveSection={setActiveSection}
         />
-        <main className="flex-1 md:p-6 md:ml-64 h-full ">
+        <main className="flex-1 md:p-6 md:ml-64 h-full bg-[#F2F7FD]">
           {renderContent()}
         </main>
       </div>

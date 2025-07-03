@@ -39,8 +39,8 @@ export default function Sidebar({ activeSection, setActiveSection }) {
                 }}
                 className={`p-4 text-left ${
                   activeSection === item
-                    ? "bg-[#8200DB] text-white"
-                    : "hover:bg-purple-100"
+                    ? "bg-gradient-to-r from-sky-500 to-blue-600 text-white"
+                    : "hover:bg-gradient-to-r from-blue-50 to-blue-50"
                 }`}
               >
                 <span className="ml-8">{item}</span>
@@ -62,8 +62,8 @@ export default function Sidebar({ activeSection, setActiveSection }) {
               onClick={() => setActiveSection(item)}
               className={`flex items-center p-3 rounded-md transition-colors ${
                 activeSection === item
-                  ? "bg-[#8200DB] text-white"
-                  : "hover:bg-purple-100"
+                  ? "bg-gradient-to-r from-sky-500 to-sky-600 text-white"
+                  : "hover:bg-gradient-to-r from-sky-50 to-sky-100"
               }`}
             >
               <div className="w-6 h-6 mr-3">{/* Space for future icons */}</div>

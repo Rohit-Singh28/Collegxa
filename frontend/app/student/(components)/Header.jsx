@@ -103,7 +103,7 @@ const Header = () => {
                 <a
                   key={item.label}
                   href={item.href}
-                  className="text-gray-700 hover:text-purple-600 font-medium transition-colors duration-200 px-3 py-2 rounded-md hover:bg-purple-50"
+                  className="text-gray-700 hover:text-green-600 font-medium transition-colors duration-200 px-3 py-2 rounded-md hover:bg-green-50"
                 >
                   {item.label}
                 </a>
@@ -133,7 +133,7 @@ const Header = () => {
             {isLoggedIn ? (
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg font-medium transition-all duration-200"
+                className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-lg font-medium transition-all duration-200"
               >
                 <LogOut className="h-5 w-5" />
                 <span>Logout</span>

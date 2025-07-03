@@ -38,7 +38,7 @@ const page = () => {
     fetchCounsellorByCollegeId();
   }, []);
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 bg-[#F2F7FD]">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {counsellor?.map((counselor) => (
           <div
@@ -76,7 +76,7 @@ const page = () => {
 
               <div className="flex gap-2">
                 <button
-                  className="flex-1 bg-purple-600 text-white py-3 rounded-lg font-medium hover:bg-purple-700 transition-colors flex items-center justify-center"
+                  className="flex-1 bg-teal-600 text-white py-3 rounded-lg font-medium hover:bg-teal-700 transition-colors flex items-center justify-center"
                   onClick={() => navigateToCounselorDetails(counselor.id)}
                 >
                   <Calendar className="h-4 w-4 mr-2" />
