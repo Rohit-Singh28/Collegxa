@@ -7,6 +7,7 @@ const counsellorDetails = require("../controller/student/cousellorInfo");
 const counsellorByClgId = require("../controller/student/counsellorByClgId");
 const logout = require("../controller/user/logout");
 const isCounsellorAllowed = require("../controller/student/IsCounsellorAllowed");
+const feedback = require("../controller/student/feedback");
 
 const router = express.Router();
 
@@ -31,5 +32,7 @@ router.get(
   AuthenticateUser,
   wrapAsync(isCounsellorAllowed)
 );
+
+router.post("/feedback", AuthenticateUser, wrapAsync(feedback));
 
 module.exports = router;

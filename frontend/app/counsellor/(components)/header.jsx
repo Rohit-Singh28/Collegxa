@@ -2,8 +2,11 @@
 import { counsellorContext } from "@/app/_context/counsellorContext";
 import axios from "axios";
 import { LogIn, LogOut } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useContext, useEffect, useState } from "react";
+import logo from "../../../public/header/logo.png";
+import Link from "next/link";
 
 const Header = () => {
   const { counsellor } = useContext(counsellorContext);
@@ -44,17 +47,12 @@ const Header = () => {
   }, [counsellor]);
 
   return (
-    <nav className="bg-white shadow-md py-4 px-6 md:px-10 sticky top-0 z-50">
+    <nav className="bg-white shadow-md  px-6 md:px-10 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
         {/* Logo */}
-        <div className="flex items-center">
-          <div className="h-10 w-10 bg-purple-600 rounded-md flex items-center justify-center">
-            <span className="text-white font-bold text-xl">SC</span>
-          </div>
-          <span className="ml-2 text-xl font-semibold text-gray-800">
-            StudentCounsel
-          </span>
-        </div>
+        <Link href={"/"}>
+          <Image src={logo} alt="Collegxa Logo" className="h-20 w-auto" />
+        </Link>
 
         {/* Navigation Links */}
         <div className="hidden md:flex items-center space-x-6">

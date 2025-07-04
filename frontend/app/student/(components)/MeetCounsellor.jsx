@@ -5,6 +5,8 @@ import {
   ChevronRight,
   Calendar,
   UserRound,
+  Award,
+  Users,
 } from "lucide-react";
 import axios from "axios";
 import Image from "next/image";
@@ -31,73 +33,83 @@ const MeetCounsellor = () => {
     }
   };
 
+  console.log(counsellors);
+
   useEffect(() => {
-    // Fetch counselors data when the component mounts
     fetchCounselors();
   }, []);
 
   return (
-    <section className="py-16 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-6 md:px-10">
-        <div className="flex justify-between items-end mb-10">
-          <div>
-            <p className="text-purple-600 font-semibold mb-2">
-              EXPERT GUIDANCE
-            </p>
-            <h2 className="text-3xl font-bold text-gray-800">
-              Meet Our Counselors
-            </h2>
+    <section className="py-10 bg-gradient-to-br from-slate-50 to-white">
+      <div className="max-w-6xl mx-auto px-4 md:px-10">
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-full text-sm font-semibold mb-4">
+            <Award className="h-4 w-4 mr-2" />
+            EXPERT GUIDANCE
           </div>
-          <a
-            href="#"
-            className="text-purple-600 font-medium hidden md:flex items-center hover:underline"
-          >
-            View all counselors <ChevronRight className="h-4 w-4 ml-1" />
-          </a>
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Meet Our Counselors
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Connect with experienced professionals who are dedicated to guiding
+            you towards your academic and career goals.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           {counsellors?.map((counselor) => (
             <div
               key={counselor.id}
-              className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all transform hover:-translate-y-1"
+              className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group"
             >
-              <div className="p-6">
-                <div className="flex items-center mb-4">
-                  <div className="relative h-20 w-20 rounded-full overflow-hidden mr-4 border-2 border-purple-100">
-                    <img
-                      src={
-                        counselor?.profilePhoto ||
-                        "https://via.placeholder.com/150"
-                      }
-                      alt={`${counselor?.name}'s profile`}
-                      className="object-cover"
-                    />
+              <div className="p-8">
+                <div className="flex items-start mb-6">
+                  <div className="relative">
+                    <div className="h-24 w-24 rounded-2xl overflow-hidden mr-6 border-4 border-gradient-to-r from-teal-500 to-teal-600 shadow-lg">
+                      <Image
+                        src={counselor.profilePhoto}
+                        width={96}
+                        height={96}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-800">
+                  <div className="flex-1">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">
                       {counselor.name}
                     </h3>
-                    <p className="text-purple-600">{counselor.collegeName}</p>
-                    <div className="flex items-center mt-1">
-                      <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                      <span className="text-gray-700 ml-1 font-medium">
-                        {counselor.rating}
-                      </span>
-                      <span className="text-gray-500 ml-1">
-                        ({counselor.reviews} reviews)
-                      </span>
+                    <p className="text-teal-600 font-semibold mb-3">
+                      {counselor.collegeName}
+                    </p>
+                    <div className="flex items-center">
+                      <div className="flex items-center bg-yellow-50 px-3 py-1 rounded-full">
+                        <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                        <span className="text-gray-800 ml-1 font-semibold">
+                          {counselor.rating}
+                        </span>
+                      </div>
+                      <div className="flex items-center ml-3 text-gray-600">
+                        <Users className="h-4 w-4 mr-1" />
+                        <span className="text-sm">
+                          {counselor.reviews} reviews
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex gap-2">
-                  <button className="flex-1 bg-purple-600 text-white py-3 rounded-lg font-medium hover:bg-purple-700 transition-colors flex items-center justify-center">
-                    <Calendar className="h-4 w-4 mr-2" />
+                <div className="border-t border-gray-100 mb-6"></div>
+
+                <div className="flex gap-4">
+                  <button
+                    onClick={() => navigateToCounselorDetails(counselor.id)}
+                    className="flex-1 bg-gradient-to-r from-teal-500 to-teal-600 text-white py-4 rounded-xl font-semibold hover:from-teal-600 hover:to-teal-700 transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-105"
+                  >
+                    <Calendar className="h-5 w-5 mr-2" />
                     Book Session
                   </button>
                   <button
-                    className="px-3 py-3 border border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors cursor-pointer"
+                    className="px-6 py-4 border-2 border-teal-500 text-teal-600 rounded-xl hover:bg-teal-50 transition-all duration-300 cursor-pointer group-hover:border-teal-600 hover:shadow-lg"
                     onClick={() => navigateToCounselorDetails(counselor.id)}
                   >
                     <UserRound className="h-5 w-5" />
@@ -108,12 +120,13 @@ const MeetCounsellor = () => {
           ))}
         </div>
 
-        <div className="text-center mt-10 md:hidden">
+        <div className="text-center">
           <a
             href="#"
-            className="text-purple-600 font-medium inline-flex items-center hover:underline"
+            className="inline-flex items-center px-8 py-4 bg-white text-teal-600 border-2 border-teal-500 rounded-xl font-semibold hover:bg-teal-50 hover:border-teal-600 transition-all duration-300 shadow-lg hover:shadow-xl"
           >
-            View all counselors <ChevronRight className="h-4 w-4 ml-1" />
+            View all counselors
+            <ChevronRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
           </a>
         </div>
       </div>

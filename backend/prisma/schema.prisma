@@ -154,3 +154,13 @@ model Chat {
   @@index([studentReceiverId])
   @@index([counsellorReceiverId])
 }
+
+model Feedback {
+  id                Int    @id @default(autoincrement())
+  rating            Int    @default(2)
+  counselorFeedback String
+  sessionLink       String
+  mostHelpful       String
+  studentId         Int
+  counsellorId      Int
+}

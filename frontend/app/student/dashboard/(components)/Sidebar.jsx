@@ -7,7 +7,7 @@ export default function Sidebar({ activeSection, setActiveSection }) {
 
   const navItems = [
     "Chats",
-    "Sessions",
+    "Feedback",
     "Student Info",
     "Suggested Counsellor",
   ];
