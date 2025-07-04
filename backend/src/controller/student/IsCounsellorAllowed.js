@@ -10,7 +10,7 @@ const isCounsellorAllowed = async (req, res) => {
       where: { id: Number(counsellorId) },
     });
 
-    console.log(counsellorId, userId);
+    // console.log(counsellorId, userId);
 
     if (!counsellor) {
       return res.json({

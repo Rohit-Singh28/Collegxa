@@ -10,13 +10,6 @@ import {
   Send,
   CheckCircle,
   AlertCircle,
-  Calendar,
-  Award,
-  ThumbsUp,
-  Target,
-  Users,
-  BookOpen,
-  TrendingUp,
   Loader2,
 } from "lucide-react";
 import axios from "axios";
@@ -24,11 +17,11 @@ import axios from "axios";
 const CounselorFeedbackForm = () => {
   const [step, setStep] = useState(1); // 1: ID verification, 2: Feedback form
   const [counselorId, setCounselorId] = useState("");
-  const [counselorData, setCounselorData] = useState(null);
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationError, setVerificationError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [counsellorId, setCounsellorId] = useState("");
 
   const [feedbackData, setFeedbackData] = useState({
     sessionDuration: "",
@@ -65,24 +58,26 @@ const CounselorFeedbackForm = () => {
     setIsVerifying(true);
     setVerificationError("");
 
-    setStep(2);
-    // try {
-    //   const response = await axios.get(
-    //     `${process.env.NEXT_PUBLIC_BASE_URL}/counsellor/verify/${counselorId}`
-    //   );
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/student/course/${counselorId}`,
+        { withCredentials: true }
+      );
 
-    //   if (response.data && response.data.id) {
-    //     setCounselorData(response.data);
-    //   } else {
-    //     setVerificationError(
-    //       "Counselor not found. Please check the ID and try again."
-    //     );
-    //   }
-    // } catch (error) {
-    //   setVerificationError("Invalid counselor ID or counselor not found.");
-    // } finally {
-    //   setIsVerifying(false);
-    // }
+      if (response.data.success) {
+        setCounsellorId(response.data.data.counsellorId);
+
+        setStep(2);
+      } else {
+        setVerificationError(
+          "Access denied. You are not allowed to access this counselor's services."
+        );
+      }
+    } catch (error) {
+      setVerificationError("Invalid counselor ID or counselor not found.");
+    } finally {
+      setIsVerifying(false);
+    }
   };
 
   const handleInputChange = (field, value) => {
@@ -105,13 +100,14 @@ const CounselorFeedbackForm = () => {
 
     try {
       const feedbackPayload = {
-        counselorId: counselorId,
+        counsellorId: counselorId,
         ...feedbackData,
       };
 
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/feedback/submit`,
-        feedbackPayload
+        `${process.env.NEXT_PUBLIC_BASE_URL}/student/feedback`,
+        feedbackPayload,
+        { withCredentials: true }
       );
 
       if (response.status === 200) {
@@ -119,7 +115,9 @@ const CounselorFeedbackForm = () => {
       }
     } catch (error) {
       console.error("Error submitting feedback:", error);
-      alert("Error submitting feedback. Please try again.");
+      alert(
+        "Feedback submission failed OR you have already submitted feedback for this counselor."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -184,10 +182,6 @@ const CounselorFeedbackForm = () => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-full text-sm font-semibold mb-4">
-            <MessageSquare className="h-4 w-4 mr-2" />
-            FEEDBACK FORM
-          </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             Counselor Feedback
           </h1>
@@ -198,7 +192,7 @@ const CounselorFeedbackForm = () => {
         </div>
 
         {/* Step 1: Counselor ID Verification */}
-        {/* {step === 1 && (
+        {step === 1 && (
           <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
             <div className="max-w-md mx-auto">
               <div className="text-center mb-8">
@@ -249,41 +243,11 @@ const CounselorFeedbackForm = () => {
               </div>
             </div>
           </div>
-        )} */}
+        )}
 
         {/* Step 2: Feedback Form */}
-        {true && (
+        {step === 2 && (
           <div className="bg-white rounded-2xl shadow-xl p-8">
-            {/* Counselor Info */}
-            {/* <div className="bg-gradient-to-r from-teal-50 to-teal-100 rounded-xl p-6 mb-8">
-              <div className="flex items-center">
-                <div className="h-16 w-16 rounded-full overflow-hidden border-4 border-white shadow-lg mr-4">
-                  <img
-                    src={
-                      counselorData.profilePhoto ||
-                      "https://via.placeholder.com/150"
-                    }
-                    alt={counselorData.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900">
-                    {counselorData.name}
-                  </h3>
-                  <p className="text-teal-600 font-semibold">
-                    {counselorData.collegeName}
-                  </p>
-                  <div className="flex items-center mt-1">
-                    <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                    <span className="text-gray-700 ml-1">
-                      {counselorData.rating}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div> */}
-
             <form onSubmit={submitFeedback} className="space-y-8">
               {/* Session Details */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
