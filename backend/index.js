@@ -18,6 +18,7 @@ const collegeRoute = require("./src/route/college");
 const studentRoute = require("./src/route/student");
 const chatRoute = require("./src/route/chat");
 const paymentRoute = require("./src/route/payment");
+const adminRoute = require("./src/route/admin");
 
 // Initialize Prisma client
 const prisma = new PrismaClient();
@@ -137,6 +138,7 @@ app.use("/api", authRoute);
 app.use("/api/counsellor", counsellorRoute);
 app.use("/api/college", collegeRoute);
 app.use("/api/student", studentRoute);
+app.use("/api/admin", adminRoute);
 app.use("/api/chats", chatRoute);
 app.use("/api/payment", paymentRoute);
 

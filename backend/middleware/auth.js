@@ -24,4 +24,33 @@ const AuthenticateUser = wrapAsync(async (req, res, next) => {
   }
 });
 
-module.exports = { AuthenticateUser };
+const AuthenticateAdmin = wrapAsync(async (req, res, next) => {
+  const token = req.cookies?.jwttoken;
+
+  if (!token) {
+    return res.status(200).json({
+      message: "Login in to continue..",
+      success: false,
+      error: true,
+    });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    req.currentUser = decoded;
+
+    if (decoded.role !== "admin") {
+      return res.status(403).json({
+        message: "Access denied",
+        success: false,
+        error: true,
+      });
+    }
+
+    next();
+  } catch (error) {
+    res.status(400).send("Invalid token !");
+  }
+});
+
+module.exports = { AuthenticateUser, AuthenticateAdmin };
