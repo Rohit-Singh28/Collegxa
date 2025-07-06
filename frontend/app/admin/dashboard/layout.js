@@ -5,7 +5,7 @@ import Sidebar from "../(components)/Sidebar";
 import CounsellorVerification from "../(components)/CounsellorVerification";
 
 export default function Dashboard() {
-  const [activeSection, setActiveSection] = useState("Chats");
+  const [activeSection, setActiveSection] = useState("counsellor verification");
 
   const renderContent = () => {
     switch (activeSection) {

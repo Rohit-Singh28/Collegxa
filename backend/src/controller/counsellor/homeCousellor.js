@@ -5,6 +5,9 @@ const homeCounsellor = async (req, res) => {
   try {
     const counsellors = await prisma.counsellor.findMany({
       take: 7,
+      where: {
+        isVerified: true,
+      },
       select: {
         id: true,
         name: true,

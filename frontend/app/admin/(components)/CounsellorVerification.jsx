@@ -10,6 +10,8 @@ import {
   GraduationCap,
   Building,
 } from "lucide-react";
+import Image from "next/image";
+import { toast, ToastContainer } from "react-toastify";
 
 const UserManagementDashboard = () => {
   const [users, setUsers] = useState([]);
@@ -31,6 +33,8 @@ const UserManagementDashboard = () => {
     }
   };
 
+  console.log(users);
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -48,21 +52,45 @@ const UserManagementDashboard = () => {
     });
   };
 
-  const handleVerify = (userId) => {
-    setVerifiedUsers((prev) => new Set([...prev, userId]));
-    // Add your verification logic here
-    console.log("Verified user:", userId);
+  const handleVerify = async (userId) => {
+    try {
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/admin/verifyCounsellor/${userId}`,
+        { withCredentials: true }
+      );
+
+      console.log(res);
+
+      if (res.status != 200) {
+        toast.error("Failed to Verify user. Please try again.");
+        return;
+      }
+      fetchData();
+      toast.success("User Verified Successfully...");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to Verify user. Please try again.");
+    }
   };
 
-  const handleDelete = (userId) => {
+  const handleDelete = async (userId) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
-      setUsers((prev) => prev.filter((user) => user.id !== userId));
-      setVerifiedUsers((prev) => {
-        const newSet = new Set(prev);
-        newSet.delete(userId);
-        return newSet;
-      });
-      console.log("Deleted user:", userId);
+      try {
+        const res = await axios.delete(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/admin/counsellor/${userId}`,
+          { withCredentials: true }
+        );
+
+        if (res.status != 200) {
+          toast.error("Failed to delete user. Please try again.");
+          return;
+        }
+        fetchData();
+        toast.success("User Deleted Successfully...");
+      } catch (error) {
+        console.log(error);
+        toast.error("Failed to delete user. Please try again.");
+      }
     }
   };
 
@@ -108,6 +136,7 @@ const UserManagementDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
+      <ToastContainer />
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -276,14 +305,14 @@ const UserManagementDashboard = () => {
           <div className="relative max-w-full max-h-full">
             <button
               onClick={closeFullscreen}
-              className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
+              className="absolute top-0 right-0 text-white hover:text-gray-300 transition-colors"
             >
               <X className="w-8 h-8" />
             </button>
             <img
               src={fullscreenImage}
               alt="Fullscreen view"
-              className="max-w-full max-h-full object-contain"
+              className="max-w-[80%] max-h-[80%] object-contain mx-auto"
             />
           </div>
         </div>
