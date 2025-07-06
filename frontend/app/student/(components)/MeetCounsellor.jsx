@@ -70,6 +70,7 @@ const MeetCounsellor = () => {
                         src={counselor.profilePhoto}
                         width={96}
                         height={96}
+                        alt="Counsellor Img"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     </div>
