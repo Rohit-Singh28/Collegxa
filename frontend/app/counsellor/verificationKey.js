@@ -5,4 +5,5 @@ export const validKeys = [
   "JKL012",
   "MNO345",
   "Rohit",
+  "HELLO",
 ];
