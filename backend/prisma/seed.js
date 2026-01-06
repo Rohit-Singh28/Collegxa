@@ -6,7 +6,11 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("Starting database seeding...");
 
-  // Clear existing data (optional - remove if you don't want to clear the database)
+  // Clear existing data in the correct order (reverse dependency order)
+  await prisma.chat.deleteMany({});
+  await prisma.payment.deleteMany({});
+  await prisma.cousellorStudentAccess.deleteMany({});
+  await prisma.feedback.deleteMany({});
   await prisma.completedSession.deleteMany({});
   await prisma.sessionRequest.deleteMany({});
   await prisma.student.deleteMany({});
@@ -14,6 +18,7 @@ async function main() {
   await prisma.document.deleteMany({});
   await prisma.college.deleteMany({});
   await prisma.registrationAccess.deleteMany({});
+  await prisma.admin.deleteMany({});
 
   console.log("Cleared existing data");
 

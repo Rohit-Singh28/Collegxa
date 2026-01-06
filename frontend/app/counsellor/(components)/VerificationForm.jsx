@@ -137,7 +137,7 @@ export default function VerificationForm() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
+    <div className=" flex flex-col items-center justify-center bg-gray-50 p-4">
       {status && (
         <div
           className={`mb-4 p-3 rounded-lg text-sm font-medium w-full max-w-md ${
